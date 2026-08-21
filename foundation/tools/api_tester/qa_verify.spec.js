@@ -63,8 +63,8 @@ function parseArgs(args) {
 // ── 阶段 B：页面渲染验证 ────────────────────────────────────────
 
 async function verifyPage(page, pageDef, config) {
-    const reportlet = pageDef.reportlet || (config.project + '/pages/' + pageDef.name + '.cpt');
-    const url = config.baseUrl + '?op=write&reportlet=' + encodeURIComponent(reportlet);
+    const viewlet = pageDef.viewlet || pageDef.reportlet || (config.project + '/pages/' + pageDef.name + '.cpt');
+    const url = config.baseUrl + '?viewlet=' + encodeURIComponent(viewlet) + '&op=write';
     var extraUrl = pageDef.url_params || '';
 
     console.log('\n── ' + pageDef.name + ' (' + (pageDef.type || '?') + ')');

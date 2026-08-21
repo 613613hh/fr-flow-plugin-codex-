@@ -44,7 +44,7 @@ Agent 启动时已通过 settings.json 注入，直接使用：
 ```
 qa_task.json:    $FR_PROJECTS_DIR/{project}/docs/qa_task.json
 测试报告输出:     $FR_PROJECTS_DIR/{project}/docs/测试报告-{module}.md
-页面预览地址:     http://localhost:18080/webroot/decision/view/report?op=write&reportlet={project}/pages/{page_name}.cpt
+页面预览地址:     http://localhost:8075/webroot/decision/view/report?viewlet={project}/pages/{page_name}.cpt&op=write
 ```
 
 ---
@@ -131,7 +131,7 @@ node qa_verify.spec.js \
 
 ```bash
 # 录制操作生成脚本
-npx playwright codegen "http://localhost:18080/webroot/decision/view/report?op=write&reportlet={project}/pages/{page}.cpt"
+npx playwright codegen "http://localhost:8075/webroot/decision/view/report?viewlet={project}/pages/{page}.cpt&op=write"
 ```
 
 录制得到的操作脚本整理后写入 `$FR_PROJECTS_DIR/{project}/test/page_verify.spec.js`，作为该项目的手动验证脚本。
@@ -251,7 +251,7 @@ npx playwright codegen "http://localhost:18080/webroot/decision/view/report?op=w
 {
   "project": "xxx",
   "module": "xxx",
-  "base_url": "http://localhost:18080/webroot/decision/view/report?op=write&reportlet={project}/pages/",
+  "base_url": "http://localhost:8075/webroot/decision/view/report?viewlet={project}/pages/",
   "pages": {
     "list": "{module}_list.cpt",
     "form": "{module}_form.cpt"
