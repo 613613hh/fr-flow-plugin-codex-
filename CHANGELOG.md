@@ -13,6 +13,14 @@
 - Added `fr-release` to create validated internal release ZIPs containing only the selected CPT files and an optional latest stored-procedure snapshot.
 - Documented that embedded MJS is excluded from final release archives.
 
+## [3.2.1] — 2026-08-21
+
+### Changed
+
+- `fr-release` now requires the project `data/` directory and automatically packages every `data/**/*.cpt` file with each release.
+- Release verification fails when the data directory is missing, empty, or incompletely represented in the ZIP.
+- Bumped the plugin version to `3.2.1+codex.20260821160000`.
+
 ## [3.1.1] — 2026-06-30
 
 ### Changed · 移动端资源加载改为 CDN 优先 + 本地兜底

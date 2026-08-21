@@ -54,12 +54,19 @@ def collect_files(project_root: Path, task: dict) -> tuple[list[tuple[Path, str]
     entries: list[tuple[Path, str]] = []
     listed: list[str] = []
 
-    data_cpt = task.get("data_cpt")
-    if data_cpt:
-        source = safe_file(project_root, str(data_cpt))
-        archive = PurePosixPath("reportlets", project, Path(str(data_cpt)).as_posix()).as_posix()
+    # The complete data layer is mandatory. Package every CPT under data/ so
+    # data-template changes cannot be omitted from a page release.
+    data_root = project_root / "data"
+    if not data_root.is_dir():
+        fail(f"data directory is required for every release: {data_root}")
+    data_files = sorted(path for path in data_root.rglob("*.cpt") if path.is_file())
+    if not data_files:
+        fail(f"data directory must contain at least one CPT: {data_root}")
+    for source in data_files:
+        relative = source.relative_to(project_root).as_posix()
+        archive = PurePosixPath("reportlets", project, relative).as_posix()
         entries.append((source, archive))
-        listed.append(str(data_cpt))
+        listed.append(relative)
 
     release = task.get("release") or {}
     selected_pages = release.get("cpt_files")
