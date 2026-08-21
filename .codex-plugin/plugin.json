@@ -1,9 +1,9 @@
 {
   "name": "fr-flow-plugin",
   "description": "FineReport 11 development workflow for PC and mobile React projects, including requirements, CPT development, change management, offline releases, and QA automation.",
-  "version": "3.1.1+codex.20260821015103",
+  "version": "3.1.1+codex.20260821015349",
   "author": {
-    "name": "613613hh"
+    "name": "\u5c0f\u4f55"
   },
   "homepage": "https://github.com/613613hh/fr-flow-plugin-codex-",
   "repository": "https://github.com/613613hh/fr-flow-plugin-codex-.git",
