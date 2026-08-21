@@ -1,0 +1,8 @@
+.fr.yaml
+.env
+node_modules/
+__pycache__/
+*.pyc
+*.log
+*.tmp
+.DS_Store

@@ -1,0 +1,22 @@
+{
+  "name": "fr-flow-plugin",
+  "description": "FineReport frontend development workflow for PC and mobile React projects, including data, display, and QA automation.",
+  "version": "3.1.1+codex.20260821013422",
+  "author": {
+    "name": "FineReport development team"
+  },
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Fr Flow Plugin",
+    "shortDescription": "Build and test FineReport PC and mobile projects.",
+    "longDescription": "Nine FineReport workflow skills covering planning, data CPT, React display, and browser QA.",
+    "developerName": "FineReport development team",
+    "category": "Productivity",
+    "capabilities": [
+      "skills"
+    ],
+    "defaultPrompt": [
+      "Use the FineReport workflow to plan, build, or test a reportlets project."
+    ]
+  }
+}
