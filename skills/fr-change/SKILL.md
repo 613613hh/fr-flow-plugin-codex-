@@ -20,9 +20,13 @@ For any failure, read `shared/KNOWLEDGE/ERROR_HANDLING.md` and follow its classi
 ## Version control
 
 - Inspect `git status` before changing files and preserve unrelated work.
+- Treat the project Git repository as the rollback mechanism. Before replacing any formal `pages/*.cpt`, require a clean or intentionally recorded worktree and a commit (or tag) containing the last known-good CPT set.
 - Record the change in the project changelog or change document when the project has one.
 - Use a semantic version (`MAJOR.MINOR.PATCH`) and create a Git tag only after validation passes.
 - Do not create a release tag for an unverified working tree.
+- The validated CPT output must use the normal `.cpt` filename in `pages/` so FineReport can load it for real functional testing. Do not use a non-CPT suffix for the test artifact; overwrite the development CPT only after the JSX -> MJS -> CPT quality gate passes.
+- After overwriting, run the actual FineReport functional/QA checks against those `pages/*.cpt` files. If the checks fail, restore the previous commit/tag with Git; do not hand-edit the compiled CPT to hotfix it.
+- A successful change keeps the overwritten CPT and commits the JSX, MJS, CPT, task contracts, and changelog together. The release ZIP is a separate delivery artifact, not a second source tree.
 - If stored procedures changed, update the project's latest stored-procedure snapshot; otherwise do not manufacture or copy an SQL file.
 
 ## Release handoff

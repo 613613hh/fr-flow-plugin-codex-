@@ -15,7 +15,7 @@ Require the project path, release version, and the exact two final CPT files. Co
 
 ## Package rules
 
-Create a project-local `release/v<version>/` staging directory and a ZIP named `fr-release-v<version>.zip`.
+Create the release output under the project-local `releases/` directory. Use a versioned ZIP name such as `{project}-{version}.zip`; never overwrite an existing ZIP with the same version.
 
 The archive must contain only:
 
@@ -32,6 +32,7 @@ The SQL file is the latest complete stored-procedure snapshot, not an unrelated 
 Before packaging:
 
 - Confirm both CPT files exist and are the validated outputs of the JSX -> MJS -> CPT chain.
+- Confirm the CPT files are the current, Git-committed development/test files that were actually loaded and tested in FineReport. Do not package a separate `.generated` or temporary artifact.
 - Confirm no external MJS file is required at runtime; MJS is embedded in CPT for this project.
 - If SQL is included, confirm it is the current stored-procedure snapshot.
 - Inspect the ZIP listing and fail if any extra file is present.
