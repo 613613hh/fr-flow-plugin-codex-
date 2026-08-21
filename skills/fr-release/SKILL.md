@@ -36,6 +36,7 @@ Before packaging:
 - Confirm no external MJS file is required at runtime; MJS is embedded in CPT for this project.
 - If SQL is included, confirm it is the current stored-procedure snapshot.
 - Inspect the ZIP listing and fail if any extra file is present.
-- Ensure the project Git tree is clean or clearly record any intentional release commit.
+- Require a Git commit containing the exact tested CPT, JSX, MJS, task contracts, QA report, and changelog before creating the release ZIP. Do not package from uncommitted changes.
+- Require the release version to be a semantic-version Git tag (`v<version>`) created from that commit. If the tag already exists, verify it points to the tested commit; never move or overwrite an existing tag.
 
-After verification, create the project Git tag `v<version>` and report the archive path, version, CPT files, and whether SQL was included. Do not publish or push without the user's explicit request.
+After verification, create the project Git tag `v<version>` if it does not already exist, then report the archive path, version, CPT files, SQL inclusion, commit, and tag. Ask the user whether to push the commit and tag to the configured remote; do not push automatically.
