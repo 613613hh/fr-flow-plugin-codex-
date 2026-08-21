@@ -60,6 +60,40 @@ function parseArgs(args) {
     return config;
 }
 
+function readQaCredentials(taskPath) {
+    const projectRoot = path.resolve(path.dirname(taskPath), '..');
+    const configPath = path.join(projectRoot, '.fr.yaml');
+    let text = '';
+    try { text = fs.readFileSync(configPath, 'utf8'); } catch (e) { return null; }
+    function value(name) {
+        const line = text.split(/\r?\n/).find(function(item) {
+            return item.trim().indexOf(name + ':') === 0;
+        });
+        if (!line) return '';
+        return line.substring(line.indexOf(':') + 1).trim().replace(/^[\"']|[\"']$/g, '');
+    }
+    const username = process.env.FR_QA_USER || value('qa_user');
+    const password = process.env.FR_QA_PASSWORD || value('qa_password');
+    return username && password ? { username, password } : null;
+}
+
+async function ensureLogin(page, config, credentials) {
+    if (!credentials) {
+        throw new Error('Missing QA login credentials. Set FR_QA_USER/FR_QA_PASSWORD or qa_user/qa_password in the ignored project .fr.yaml.');
+    }
+    const loginUrl = config.baseUrl.replace(/\/view\/report(?:\?.*)?$/, '/login');
+    await page.goto(loginUrl, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    const username = page.locator('input[placeholder="用户名"]');
+    const password = page.locator('input[placeholder="密码"]');
+    await username.fill(credentials.username);
+    await password.fill(credentials.password);
+    await page.locator('.login-button').click();
+    await page.waitForTimeout(1000);
+    if (page.url().includes('/decision/login')) {
+        throw new Error('FineReport QA login failed; check the local test account or trusted-network restriction.');
+    }
+}
+
 // ── 阶段 B：页面渲染验证 ────────────────────────────────────────
 
 async function verifyPage(page, pageDef, config) {
@@ -252,6 +286,13 @@ async function verifyPage(page, pageDef, config) {
     var browser = await chromium.launch({ headless: !config.headed });
     var context = await browser.newContext({ viewport: { width: 1400, height: 900 } });
     var page = await context.newPage();
+    try {
+        await ensureLogin(page, config, readQaCredentials(config.taskPath));
+    } catch (e) {
+        await browser.close();
+        console.error('QA login failed: ' + e.message);
+        process.exit(1);
+    }
 
     var pageResults = [];
 
