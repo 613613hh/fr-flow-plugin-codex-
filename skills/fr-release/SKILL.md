@@ -29,7 +29,7 @@ The SQL file is the latest complete stored-procedure snapshot, not an unrelated 
 
 Before packaging:
 
-- Confirm both CPT files exist and are the validated outputs of the JSX → MJS → CPT chain.
+- Confirm both CPT files exist and are the validated outputs of the JSX -> MJS -> CPT chain.
 - Confirm no external MJS file is required at runtime; MJS is embedded in CPT for this project.
 - If SQL is included, confirm it is the current stored-procedure snapshot.
 - Inspect the ZIP listing and fail if any extra file is present.

@@ -1,69 +1,80 @@
 # fr-flow-plugin-codex
 
-Codex plugin for FineReport 11 front-end development. It provides shared workflows for PC and mobile projects: requirements planning, CPT/data development, React/Ant Design display development, change management, release packaging, and end-to-end QA.
+面向 Codex 的 FineReport 11 前端开发插件，覆盖 PC、移动端、数据层、展示层、需求管理、版本变更、内网发布和端到端测试。
 
-## Plugin layout
+## 插件结构
 
 ```text
 fr-flow-plugin-codex-/
-├─ .codex-plugin/plugin.json   # Codex plugin manifest
-├─ skills/                     # The only skill source directory
-├─ foundation/                 # Shared CPT templates and tools
-├─ public_cpt/                 # Public CPT assets
-├─ scripts/                    # Shared workflow scripts
-├─ hooks/                      # Optional project hooks
-├─ schemas/                    # Task/QA JSON schemas
-├─ shared/                     # Shared FineReport knowledge
-└─ docs/                       # Installation and workflow documentation
+├─ .codex-plugin/plugin.json   # Codex 插件清单
+├─ skills/                     # 唯一技能源码目录
+├─ foundation/                 # CPT 骨架、脚手架和测试工具
+├─ public_cpt/                 # 公共 CPT 资源
+├─ scripts/                    # 数据、展示和环境工具
+├─ hooks/                      # 可选的项目级权限守卫脚本
+├─ schemas/                    # dev_task/qa_task 校验模式
+├─ shared/                     # FineReport 公共知识库
+└─ docs/                       # 安装、配置和部署文档
 ```
 
-Business report projects are intentionally not included. Keep them in a separate FineReport `reportlets` workspace and install this plugin into Codex.
+业务项目不放在本仓库中。请将 `whmigrantworkerspay` 等项目放在独立的 FineReport `reportlets` 工作区，插件安装后即可在该工作区使用。
 
-## Install from GitHub
-
-Install this repository as a Codex plugin using the Codex plugin installer. Codex places the versioned plugin under its user plugin cache; the source repository does not need to be copied into the FineReport `reportlets` directory.
-
-Available workflows:
+## 技能
 
 ```text
-/fr
-/fr-pm <project>
-/fr-data-dev <project>
-/fr-display-dev <project>
-/fr-qa <project>
-/fr-change <project>
-/fr-release <project>
-/frm
-/frm-pm <project>
-/frm-display-dev <project>
-/frm-qa <project>
+/fr                       # 入口说明（也可直接用自然语言触发）
+/fr-pm <项目名>            # 需求和任务契约
+/fr-data-dev <项目名>     # 数据层 CPT、接口和存储过程
+/fr-display-dev <项目名>  # PC React/Ant Design 页面
+/fr-qa <项目名>           # PC 端到端验收
+/fr-change <项目名>       # 已有项目版本变更
+/fr-release <项目名>      # 内网离线发布包
+/frm                      # 移动端入口
+/frm-pm <项目名>          # 移动端需求
+/frm-display-dev <项目名> # 移动端页面
+/frm-qa <项目名>          # 移动端验收
 ```
 
-`fr-change` enforces the JSX → MJS → CPT source chain and Git versioning. `fr-release` creates the validated internal ZIP with exactly the selected CPT files and an optional latest stored-procedure snapshot.
+说明：Codex Skill 的 `/fr` 是触发提示，不是由插件清单注册的内置斜杠命令。若客户端未将斜杠文本路由到技能，请使用自然语言，例如“使用 fr-flow-plugin:fr 查看技能列表”，或使用 `$fr-flow-plugin:fr`（客户端支持时）。
 
-## Build and release workflow
+## 安装和工作区
 
-For a report project, the recommended source/build chain is:
+插件仓库与 FineReport 工作区分离。插件安装后由 Codex 管理版本缓存，不需要复制到 `WEB-INF/reportlets`。在目标工作区配置 `.codex/env.json` 或项目环境变量，使技能获得以下路径：
+
+```text
+FR_WORKSPACE       插件安装目录
+FR_PROJECTS_DIR    项目源码目录
+FR_REPORTLETS      FineReport CPT 部署目录
+FR_SERVER_URL      FineReport 服务地址
+```
+
+不要提交包含密码的 `.fr.yaml`；使用 `.fr.yaml.example` 作为模板。
+
+## 开发、变更和发布
+
+前端页面严格遵循：
 
 ```text
 JSX → MJS → CPT
 ```
 
-MJS is an intermediate build artifact. Once embedded in the CPT, it is not included in the final offline release package.
+JSX 是唯一人工维护的源文件。MJS 是构建中间产物，已经嵌入 CPT 后不进入最终发布包。CPT 必须由工具链生成，禁止手工修改编译内容。
 
-Each business project owns its release directory. A release archive contains only final CPT files and, when the change includes stored-procedure changes, the latest stored-procedure snapshot:
+`fr-change` 负责变更范围、构建、CPT 重生成、验证和 Git 版本标记。`fr-release` 负责生成项目内的离线发布 ZIP：
 
 ```text
 fr-release-v1.2.0.zip
 ├─ report-a.cpt
 ├─ report-b.cpt
-└─ procedures.sql   # optional
+└─ procedures.sql   # 仅本次涉及存储过程变更时存在
 ```
 
-If no stored procedure changed, omit `procedures.sql`. JSX and MJS are development/build artifacts and must not be placed in the final release archive.
+SQL 必须是最新的完整存储过程快照；没有存储过程变更时省略 SQL。最终包禁止包含 JSX、MJS、备份文件、日志、Mock 文件和其他无关文件。
 
-## Development and versioning
+## Hook 说明
 
-The plugin repository is independent of FineReport runtime files. Keep environment-specific values in the project workspace, not in this repository. Do not commit credentials or local `.fr.yaml` files; use `.fr.yaml.example` as the template.
+`hooks/permission-guard.js` 是可选的项目级权限守卫脚本，源码随插件版本管理，但不会因为安装插件而自动修改每个人的 Codex 工作区权限。需要启用时，请按 `docs/INSTALL.md` 将它配置到目标工作区的 Codex Hook 配置中；不同成员可以使用不同的 `FR_PROJECTS_DIR` 和 `FR_REPORTLETS`。
 
-Use Git tags for installable releases, for example `v3.2.0`. Update the plugin manifest cachebuster before publishing a changed local plugin.
+## 版本
+
+插件使用 Git Tag 发布，例如 `v3.2.0`。修改技能、脚本或 Hook 后先执行插件校验，再更新插件版本并推送 Tag。

@@ -32,6 +32,13 @@ let _frReportlets = [];
 
 /** 尝试解析 YAML 中 paths.finereport_reportlets（纯手工，不依赖第三方库） */
 function readReportletsPaths() {
+    // Codex workspaces commonly provide paths as environment variables.
+    for (const envName of ['FR_REPORTLETS', 'FR_PROJECTS_DIR']) {
+        const envPath = process.env[envName];
+        if (envPath && fs.existsSync(path.dirname(envPath))) {
+            _frReportlets.push(path.normalize(envPath));
+        }
+    }
     for (const yamlPath of [HOME_YAML, WORKSPACE_YAML]) {
         try {
             if (!fs.existsSync(yamlPath)) continue;
@@ -157,10 +164,12 @@ function main() {
     process.stdin.on('end', () => {
         try {
             const data = JSON.parse(input);
-            const toolName = data.tool_name || '';
-            const ti = data.tool_input || {};
+            // Accept both the legacy Claude-style event fields and Codex
+            // project-hook payloads used by newer runtimes.
+            const toolName = data.tool_name || data.toolName || data.name || '';
+            const ti = data.tool_input || data.toolInput || data.input || data.arguments || {};
 
-            let fp = ti.file_path || ti.path || ti.notebook_path || '';
+            let fp = ti.file_path || ti.filePath || ti.path || ti.notebook_path || ti.notebookPath || '';
             if (toolName === 'Bash' && ti.directory) fp = ti.directory;
             if (!fp) { outputResult(true, ''); return; }
             if (!path.isAbsolute(fp)) fp = path.resolve(process.cwd(), fp);

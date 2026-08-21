@@ -1,183 +1,114 @@
-# 安装指南
+# Codex 安装与工作区配置
 
-## 一、安装插件
+## 1. 从 GitHub 安装
 
-### 方式一：通过 Marketplace CLI（推荐）
+仓库地址：
 
-在 Claude Code 中输入：
-
-```
-/plugin marketplace install fr-flow-plugin
+```text
+https://github.com/613613hh/fr-flow-plugin-codex-.git
 ```
 
-重启 Claude Code 后生效。
+使用 Codex 的插件安装入口安装仓库。安装成功后，Codex 会把插件放入用户级插件缓存目录；不要把插件源码复制到 FineReport 的 `WEB-INF/reportlets` 目录。
 
-### 方式二：手动克隆
+安装后应能看到 11 个技能：
 
-```bash
-# 克隆到 Claude Code 的 marketplace 插件目录
-# Windows: %USERPROFILE%\.claude\plugins\marketplaces\
-# Linux/macOS: ~/.claude/plugins/marketplaces/
-
-cd ~/.claude/plugins/marketplaces/
-git clone https://github.com/toStudyVUE/fr-flow-v3.git fr-flow-v3
+```text
+fr-flow-plugin:fr
+fr-flow-plugin:fr-change
+fr-flow-plugin:fr-data-dev
+fr-flow-plugin:fr-display-dev
+fr-flow-plugin:fr-pm
+fr-flow-plugin:fr-qa
+fr-flow-plugin:fr-release
+fr-flow-plugin:frm
+fr-flow-plugin:frm-display-dev
+fr-flow-plugin:frm-pm
+fr-flow-plugin:frm-qa
 ```
 
----
+## 2. 配置 FineReport 工作区
 
-## 二、配置本地环境
+插件本体和业务项目分离。建议结构：
 
-### 2.1 创建 .fr.yaml
+```text
+插件安装缓存/插件源码
+└─ fr-flow-plugin-codex-
 
-```bash
-cd ~/.claude/plugins/marketplaces/fr-flow-v3/fr-flow-v3
-cp .fr.yaml.example .fr.yaml
+FineReport 工作区
+└─ WEB-INF/reportlets/
+   ├─ .codex/
+   └─ whmigrantworkerspay/
 ```
 
-编辑 `.fr.yaml`，替换所有占位符为实际值：
+在工作区中准备环境配置，至少提供：
 
-```yaml
-paths:
-  projects_dir: /home/you/fr-antd-project          # 开发中间产物存放处
-  finereport_reportlets: /path/to/FineReport/webapps/webroot/WEB-INF/reportlets
-
-finereport:
-  server_url: http://localhost:18080/              # 帆软服务地址（含端口）
-  preview_path: /webroot/decision/view/report?op=write&reportlet=
-  admin_user: admin
-  admin_pwd: your_password
-
-mysql:
-  host: localhost
-  port: 3306
-  database: common_db
-  user: root
-  password: your_password
+```text
+FR_WORKSPACE       插件根目录
+FR_PROJECTS_DIR    项目源码目录
+FR_REPORTLETS      FineReport 的 reportlets 部署目录
+FR_SERVER_URL      FineReport 服务地址
+FR_PREVIEW_PATH    报表预览路径前缀
+FR_MYSQL_HOST      数据库主机
+FR_MYSQL_PORT      数据库端口
+FR_MYSQL_DATABASE  数据库名
+FR_MYSQL_USER      数据库用户
 ```
 
-**Windows 用户注意**：路径使用正斜杠 `/` 或双反斜杠 `\\`。
+密码只保存在本机配置中，不要提交到 GitHub。
 
-### 2.2 生成 settings.json 配置
+## 3. 技能触发
 
-```bash
-bash scripts/sync_env.sh
+Codex Skill 不一定会把 SKILL.md 中的 `/fr` 文本注册成 UI 内置斜杠命令。优先使用自然语言或完整技能名：
+
+```text
+使用 fr-flow-plugin:fr 查看帆软开发流程
+使用 fr-flow-plugin:fr-change 修改 whmigrantworkerspay
+使用 fr-flow-plugin:fr-release 发布 whmigrantworkerspay
 ```
 
-脚本输出两部分：
-1. **env 块**（复制到 settings.json）
-2. **shared/PATHS.md**（自动生成到本地）
+如果当前客户端支持显式技能语法，也可以使用：
 
-### 2.3 配置 settings.json
-
-打开项目的 `.claude/settings.json`（如 `E:\fr-projects\.claude\settings.json`），填入：
-
-```json
-{
-  "env": {
-    "FR_WORKSPACE": "/home/you/.claude/plugins/marketplaces/fr-flow-v3/fr-flow-v3",
-    "FR_PROJECTS_DIR": "/home/you/fr-antd-project",
-    "FR_REPORTLETS": "/path/to/FineReport/webapps/webroot/WEB-INF/reportlets",
-    "FR_SERVER_URL": "http://localhost:18080",
-    "FR_PREVIEW_PATH": "/webroot/decision/view/report?op=write&reportlet=",
-    "FR_ADMIN_USER": "admin",
-    "FR_MYSQL_HOST": "localhost",
-    "FR_MYSQL_PORT": "13306",
-    "FR_MYSQL_DATABASE": "common_db",
-    "FR_MYSQL_USER": "finereport"
-  },
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Write|Edit|Delete|Bash",
-        "command": "node ${FR_WORKSPACE}/hooks/permission-guard.js"
-      }
-    ]
-  }
-}
+```text
+$fr-flow-plugin:fr
+$fr-flow-plugin:fr-release
 ```
 
-**配置说明**：
+## 4. 可选 Hook
 
-| 字段 | 说明 |
-|------|------|
-| `env` | Agent 启动时注入的环境变量，技能 SKILL.md 直接通过 `$FR_*` 引用 |
-| `FR_WORKSPACE` | sync_env.sh 自动检测，技能包根目录 |
-| `FR_PROJECTS_DIR` | 项目工作目录，代码和文档存放处 |
-| `FR_REPORTLETS` | 帆软 CPT 部署目录，工具链最终写入位置 |
-| `FR_SERVER_URL` | 帆软服务地址，用于 api_tester 和 Playwright 测试 |
-| `FR_PREVIEW_PATH` | 帆软填报预览 URL 前缀 |
-| `FR_ADMIN_USER` | 帆软管理员账号（api_tester 登录用） |
-| `FR_MYSQL_*` | 数据库连接参数（密码在 .fr.yaml 中） |
-| `hooks.PreToolUse` | 权限守卫，阻止 Agent 修改技能包内文件 |
+插件包含：
 
-### 2.4 权限守卫
-
-`hooks/permission-guard.js` 在 Agent 执行 Write/Edit/Delete/Bash 操作时介入：
-
-- **黑名单**：禁止修改 `skills/`、`shared/`、`foundation/`、`scripts/`、`hooks/`
-- **白名单**：允许操作 `$FR_PROJECTS_DIR` 和 `$FR_REPORTLETS`
-- **放行**：`.fr.yaml` 用户配置文件
-
----
-
-## 三、部署公共 CPT
-
-```bash
-# 将 foundation/public_cpt/ 复制到帆软 reportlets 目录
-cp -r "$FR_WORKSPACE/foundation/public_cpt/"* "$FR_REPORTLETS/public_cpt/"
-
-# api_tester 和 api_agent 放在 reportlets/api/ 下
-mkdir -p "$FR_REPORTLETS/api"
-cp "$FR_WORKSPACE/foundation/public_cpt/api/api_tester.cpt" "$FR_REPORTLETS/api/"
-cp "$FR_WORKSPACE/foundation/public_cpt/api/api_agent.cpt" "$FR_REPORTLETS/api/"
+```text
+hooks/permission-guard.js
 ```
 
-**如果使用附件管理公共组件**，还需要执行存储过程：
+它是可选的工作区权限守卫，不会在安装插件时自动修改用户配置。启用前请确认当前 Codex 版本支持项目级 Hook 配置，并将命令路径改为本机插件实际路径：
 
-```bash
-MYSQL_PWD=$(grep 'password:' "$FR_WORKSPACE/.fr.yaml" | head -1 | sed 's/.*: *//')
-mysql -h "$FR_MYSQL_HOST" -P "$FR_MYSQL_PORT" -u "$FR_MYSQL_USER" -p"$MYSQL_PWD" \
-  "$FR_MYSQL_DATABASE" < "$FR_WORKSPACE/sql/attachment_overlay/procedures.sql"
+```text
+node <插件安装目录>/hooks/permission-guard.js
 ```
 
-详见 [`PUBLIC_CPT.md`](PUBLIC_CPT.md)。
+脚本通过环境变量或 `.fr.yaml` 查找 `FR_REPORTLETS`，保护插件源码目录，同时允许修改项目和报表部署目录。不同成员应使用各自的绝对路径，不能把开发机路径写死在仓库中。
 
----
+## 5. 验证
 
-## 四、安装 api_tester 依赖
+安装后先验证技能可发现，再执行一个只读请求：
 
-```bash
-cd "$FR_WORKSPACE/foundation/tools/api_tester"
-npm install
-npx playwright install chromium
+```text
+使用 fr-flow-plugin:fr，列出当前插件包含的技能和发布流程
 ```
 
----
+涉及项目变更时使用：
 
-## 五、验证安装
-
-在 Claude Code 中输入：
-
-```
-/fr
+```text
+使用 fr-flow-plugin:fr-change 检查项目状态，不要修改文件
 ```
 
-看到技能列表即表示安装成功。
+## 6. 发布规则
 
-可以运行 demo 项目验证完整流水线：
+项目变更遵循：
 
+```text
+JSX → MJS → CPT
 ```
-/fr-pm
-# 输入一个简单的 CRUD 需求，确认各角色能正常触发
-```
 
----
-
-## 六、已知问题
-
-| 问题 | 处理方式 |
-|------|----------|
-| Windows `display_writer.py` Unicode 报错 | 设置 `PYTHONIOENCODING=utf-8` |
-| Playwright `require('playwright')` 不可用 | 设置 `NODE_PATH` 指向 npm 全局目录，或用 `npx playwright` |
-| 帆软平台管理未启动 | 打开设计器 → 服务器 → 报表平台管理 |
-| SSH clone 失败 | 用 HTTPS：`git clone https://github.com/toStudyVUE/fr-flow-v3.git` |
+内网发布只允许由 `fr-release` 生成压缩包，包内包含两个最终 CPT，以及在存储过程发生变更时附带的最新 `procedures.sql`。MJS 不进入最终包。
