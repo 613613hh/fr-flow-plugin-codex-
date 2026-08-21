@@ -7,6 +7,8 @@ description: Manage a FineReport project change from JSX source through MJS buil
 
 Use this skill when a user asks to modify an existing FineReport project, prepare a version change, or make a change ready for internal release.
 
+For any failure, read `shared/KNOWLEDGE/ERROR_HANDLING.md` and follow its classification, retry, and stop rules.
+
 ## Required source chain
 
 1. Work only in the named project under `$FR_PROJECTS_DIR`.

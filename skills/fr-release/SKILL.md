@@ -7,6 +7,8 @@ description: Create and verify a FineReport internal release ZIP containing the 
 
 Use this skill when a validated FineReport project must be published to an internal network or packaged for copying to another environment.
 
+For any failure, read `shared/KNOWLEDGE/ERROR_HANDLING.md`. Never bypass a release stop condition to produce a partial or unverified ZIP.
+
 ## Inputs
 
 Require the project path, release version, and the exact two final CPT files. Confirm whether this change includes stored-procedure changes. Do not guess the CPT list from every file in `pages/`.

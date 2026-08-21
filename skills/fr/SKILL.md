@@ -9,6 +9,8 @@ version: 3.0.0
 
 # 帆软加壳前端开发（v3）
 
+所有阶段遇到异常时读取 `$FR_WORKSPACE/shared/KNOWLEDGE/ERROR_HANDLING.md`，按其中的分类、自动修复、停止和确认规则处理；不得跳过校验或伪造通过。
+
 ## 技能列表
 
 | 技能 | 角色 | 说明 |

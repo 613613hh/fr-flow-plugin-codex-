@@ -75,6 +75,10 @@ SQL 必须是最新的完整存储过程快照；没有存储过程变更时省�
 
 `hooks/permission-guard.js` 是可选的项目级权限守卫脚本，源码随插件版本管理，但不会因为安装插件而自动修改每个人的 Codex 工作区权限。需要启用时，请按 `docs/INSTALL.md` 将它配置到目标工作区的 Codex Hook 配置中；不同成员可以使用不同的 `FR_PROJECTS_DIR` 和 `FR_REPORTLETS`。
 
+## 异常处理
+
+所有技能统一读取 `shared/KNOWLEDGE/ERROR_HANDLING.md`。其中规定了环境、依赖、JSX/MJS/CPT、数据库、QA 和 Release 异常的分类、自动修复范围、重试次数、停止条件和必须向用户确认的操作。遇到问题时，AI 应先按该协议处理，再报告原因和下一步，不得跳过校验或伪造成功。
+
 ## 版本
 
 插件使用 Git Tag 发布，例如 `v3.2.0`。修改技能、脚本或 Hook 后先执行插件校验，再更新插件版本并推送 Tag。
