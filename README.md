@@ -31,11 +31,15 @@ Available workflows:
 /fr-data-dev <project>
 /fr-display-dev <project>
 /fr-qa <project>
+/fr-change <project>
+/fr-release <project>
 /frm
 /frm-pm <project>
 /frm-display-dev <project>
 /frm-qa <project>
 ```
+
+`fr-change` enforces the JSX → MJS → CPT source chain and Git versioning. `fr-release` creates the validated internal ZIP with exactly the selected CPT files and an optional latest stored-procedure snapshot.
 
 ## Build and release workflow
 

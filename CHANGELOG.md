@@ -5,6 +5,14 @@
 
 ---
 
+## [Unreleased] - 2026-08-21
+
+### Added
+
+- Added `fr-change` to enforce the JSX → MJS → CPT change chain and Git versioning checks.
+- Added `fr-release` to create validated internal release ZIPs containing only the selected CPT files and an optional latest stored-procedure snapshot.
+- Documented that embedded MJS is excluded from final release archives.
+
 ## [3.1.1] — 2026-06-30
 
 ### Changed · 移动端资源加载改为 CDN 优先 + 本地兜底
