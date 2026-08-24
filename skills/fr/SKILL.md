@@ -18,6 +18,7 @@ version: 3.0.0
 | `/fr-pm` | 项目经理 | 需求对话 → 设计方案 → 输出任务文档 |
 | `/fr-data-dev <项目名>` | 数据层工程师 | 生成 data CPT + 接口验证 |
 | `/fr-display-dev <项目名>` | 展示层工程师 | antd + React 页面开发 |
+| `/fr-cloud-dev <项目名>` | 云平台接口工程师 | myFR.callCloud 云平台接口开发与排查 |
 | `/fr-qa <项目名>` | 测试工程师 | 逐项验证 → 产出测试报告 |
 
 ## 完整流水线

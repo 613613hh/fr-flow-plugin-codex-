@@ -26,6 +26,7 @@ fr-flow-plugin-codex-/
 /fr-pm <项目名>            # 需求和任务契约
 /fr-data-dev <项目名>     # 数据层 CPT、接口和存储过程
 /fr-display-dev <项目名>  # PC React/Ant Design 页面
+/fr-cloud-dev <项目名>   # myFR.callCloud 云平台接口开发与排查
 /fr-qa <项目名>           # PC 端到端验收
 /fr-change <项目名>       # 已有项目版本变更
 /fr-release <项目名>      # 内网离线发布包

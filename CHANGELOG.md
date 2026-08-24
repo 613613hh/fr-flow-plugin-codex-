@@ -13,6 +13,17 @@
 - Added `fr-release` to create validated internal release ZIPs containing only the selected CPT files and an optional latest stored-procedure snapshot.
 - Documented that embedded MJS is excluded from final release archives.
 
+## [3.2.2] — 2026-08-24
+
+### Added
+
+- Added `fr-cloud-dev` with guidance for `myFR.callCloud`, `flowservice`, IIBS payloads, response handling, and troubleshooting.
+- Added the cloud-platform skill to the FR entry skill and README.
+
+### Changed
+
+- Bumped the plugin version to `3.2.2`.
+
 ## [3.2.1] — 2026-08-21
 
 ### Changed
