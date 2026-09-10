@@ -57,7 +57,10 @@ function callCloud(interfaceNo, payload, onOk, onErr) {
         if (onErr) onErr('云平台未就绪');
         return;
     }
-    myFR.callCloud(interfaceNo, payload, onOk, onErr);
+    // 第 5 参 isJson=true：强制 application/json 报文。
+    // myFR.js 默认逻辑：cloudUrl 端口为 9032 时走 x-www-form-urlencoded，
+    // 其余走 json；统一传 true 兜底，避免云平台收不到 JSON 报文。
+    myFR.callCloud(interfaceNo, payload, onOk, onErr, true);
 }
 
 callCloud('接口码', { account: account }, function(body) {
@@ -66,6 +69,8 @@ callCloud('接口码', { account: account }, function(body) {
     // 展示业务失败或网络失败
 });
 ```
+
+调用签名：`myFR.callCloud(code, body, succCb, failCb, isJson)`。`isJson` 为第 5 参，默认 `false`；页面统一传 `true` 强制 JSON Content-Type。
 
 `myFR.callCloud` 会根据 `prjId` 和接口码访问类似下面的路径，并封装 IIBS 请求体：
 

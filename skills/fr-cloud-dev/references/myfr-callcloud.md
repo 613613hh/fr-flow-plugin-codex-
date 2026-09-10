@@ -17,12 +17,32 @@
 页面加载
   -> GET {FineReport根路径}/js/myFR.js
   -> 设置 myFR.cloudUrl / prjId / fine_username / servletURL
-  -> myFR.callCloud(interfaceNo, payload, success, error)
+  -> myFR.callCloud(interfaceNo, payload, success, error, isJson)
   -> POST /{prjId}/flowservice/json/flow_{prjId}_{interfaceNo}
   -> { iibs: { req: { body: payload } } }
 ```
 
 `myFR.js` 是 FineReport 运行环境提供的实现。项目源码通常只负责加载它、设置上下文并调用公开的 `callCloud` 方法；不要复制或重写其中的内部实现。
+
+## 调用签名与隐藏行为
+
+完整签名：`myFR.callCloud(code, body, succCb, failCb, isJson = false)`。
+
+| 参数 | 说明 |
+|---|---|
+| `code` | 接口码。以 `flow_` 开头直接拼完整服务名，否则拼 `flow_{prjId}_{code}` |
+| `body` | 业务参数对象。会被原地改写：自动注入 `operator = fine_username`；请求体包装为 `{ iibs: { req: { body } } }` |
+| `succCb` | 仅 `respCode == "00000"` 时调用，入参 `resp.body`；缺省 toast「接口调用成功」 |
+| `failCb` | 仅业务失败（非 `00000`）时调用，入参 `respMsg`；网络错误不触发 failCb，只 toast「接口调用失败」 |
+| `isJson` | 第 5 参，默认 `false`。`true` 时强制 `Content-Type: application/json;charset=UTF-8` |
+
+`isJson` 必要性：myFR.js 默认按端口判断 Content-Type——`cloudUrl` 端口为 9032 时走 `x-www-form-urlencoded`，其余走 json。为统一稳定，页面 `callCloud` 包装函数应固定传 `true`（见 SKILL.md 调用格式）。
+
+其他注意：
+
+- `body` 传 `null`/`undefined` 会在注入 `operator` 时抛异常，必须传对象。
+- 调用期间 `myFR.maskShow()` 弹全屏遮罩，请求超时 50s。
+- 排查时以浏览器网络请求确认 `Content-Type` 和请求体是否符合 IIBS 契约。
 
 ## 响应处理
 
@@ -60,5 +80,6 @@
 - 接口码是否存在于项目接口契约，参数名称和大小写是否一致。
 - 最终请求是否命中 `/{prjId}/flowservice/json/flow_{prjId}_{接口码}`。
 - 请求是否使用 IIBS `iibs.req.body` 包装。
+- 请求 Content-Type 是否为 `application/json;charset=UTF-8`（`callCloud` 第 5 参 `isJson=true`）。
 - 成功判断是否使用项目契约规定的 `respCode`，而不是只判断 HTTP 200。
 - 失败时是否向用户反馈 `respMsg`，并避免重复提交。
